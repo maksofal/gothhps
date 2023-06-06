@@ -1,3 +1,7 @@
+import (
+    "github.com/aws/aws-sdk-go/aws"
+    "github.com/aws/aws-sdk-go/aws/session"
+)
 creds := credentials.NewChainCredentials(
 		[]credentials.Provider{
 			&credentials.EnvProvider{}, // Возможность брать ключи из переменных окружения
