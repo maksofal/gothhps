@@ -1,20 +1,42 @@
+package main
+
 import (
-    "github.com/aws/aws-sdk-go/aws"
-    "github.com/aws/aws-sdk-go/aws/session"
+	"flag"
+	"time"
+
+	"github.com/gin-gonic/gin"
 )
-creds := credentials.NewChainCredentials(
-		[]credentials.Provider{
-			&credentials.EnvProvider{}, // Возможность брать ключи из переменных окружения
-			&credentials.SharedCredentialsProvider{
-				Filename: path.Join(os.Getenv("HOME"), ".aws/credentials") // Путь до credentials
-				// Profile:  "<profile>",
-			},
-		},
-	)
-	sess := session.Must(session.NewSession(&aws.Config{
-		Region:                         aws.String("ru-msk"), // Указываем регион
-		Endpoint:                       aws.String("hb.vkcs.cloud"), // Указываем endpoint
-		Credentials:                    creds, // Указываем credentials
-		S3ForcePathStyle:               aws.Bool(true),
-	}))
-client:= s3.New(sess) // Создаем s3 клиент
+
+func rootHandler(c *gin.Context) {
+	currentTime := time.Now()
+	currentTime.Format("20060102150405")
+	c.JSON(200, gin.H{
+		"current_time": currentTime,
+		"text":         "Hello World",
+	})
+}
+
+// GetMainEngine is default router engine using gin framework.
+func GetMainEngine() *gin.Engine {
+	r := gin.New()
+
+	r.GET("/", rootHandler)
+
+	return r
+}
+
+// RunHTTPServer List 8000 default port.
+func RunHTTPServer() error {
+	port := flag.String("port", "8000", "The port for the mock server to listen to")
+
+	// Parse all flag
+	flag.Parse()
+
+	err := GetMainEngine().Run(":" + *port)
+
+	return err
+}
+
+func main() {
+	RunHTTPServer()
+}
